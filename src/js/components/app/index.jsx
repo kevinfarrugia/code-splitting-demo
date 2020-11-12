@@ -1,20 +1,14 @@
+import "./critical.scss";
+
 import React from "react";
 
-import Footer from "../footer";
 import Layout from "../layout";
-import TodoList from "../todoList";
-import styles from "./critical.scss";
+import Router from "../router";
 
 const App = () => {
   return (
-    <Layout meta={{ title: "Critical CSS React Webpack" }}>
-      <div className={styles.container}>
-        <h1 className={styles.title}>todos</h1>
-        <div className={styles.content}>
-          <TodoList />
-          <Footer />
-        </div>
-      </div>
+    <Layout meta={{ title: "Code Splitting Demo" }}>
+      <Router />
     </Layout>
   );
 };

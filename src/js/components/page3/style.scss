@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1em 0.5em;
+}
+
+.title {
+  text-align: center;
+}
+
+.slide {
+  max-width: 800px;
+  height: auto;
+  padding: 8px;
+  margin: 2em 1em 4em;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+.image {
+  display: block;
+  width: 100%;
+}

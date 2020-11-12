@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Header from "../header";
 import ListItem from "../listItem";
-import styles from "./critical.scss";
+import styles from "./style.scss";
 
 const TodoList = () => {
   const [todoList, setTodoList] = useState([]);

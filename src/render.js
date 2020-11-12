@@ -1,14 +1,10 @@
 /*
  * Render React application middleware
  */
-import React from "react";
-import { renderToString } from "react-dom/server";
 import Helmet from "react-helmet";
 
-import App from "./js/components/app";
-
 const handleRender = (req, res) => {
-  const html = renderToString(<App />);
+  // const html = renderToString(<App />);
 
   const helmet = Helmet.renderStatic();
 
@@ -17,7 +13,6 @@ const handleRender = (req, res) => {
     htmlAttributes: helmet.htmlAttributes,
     bodyAttributes: helmet.bodyAttributes,
     head: `${helmet.title} ${helmet.meta} ${helmet.link}`,
-    html,
   });
 };
 

@@ -319,13 +319,13 @@ const clientConfig = {
             swDest: "sw.js",
             include: [/\.js$/, /\.css$/],
           }),
-          ...(isAnalyze ? [new BundleAnalyzerPlugin()] : []),
         ]),
+    ...(isAnalyze ? [new BundleAnalyzerPlugin()] : []),
   ],
   optimization: {
     runtimeChunk: "single",
     splitChunks: {
-      chunks: "all",
+      chunks: "initial",
       minSize: 0,
       maxInitialRequests: Infinity,
       cacheGroups: {
@@ -339,6 +339,11 @@ const clientConfig = {
           name: "vendors",
           test: /[\\/]node_modules[\\/]/,
           chunks: "initial",
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
         },
       },
     },

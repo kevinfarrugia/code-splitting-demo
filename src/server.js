@@ -10,7 +10,6 @@ import helmet from "helmet";
 import PrettyError from "pretty-error";
 
 import handleRender from "./render";
-import Router from "./service/router";
 
 const app = express();
 
@@ -43,26 +42,6 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const router = new Router();
-
-// path validation middleware (could be connected to an API)
-app.use((req, res, next) => {
-  router
-    .isValidPath(req.path)
-    .then((isValid) => {
-      if (isValid) {
-        return next();
-      }
-
-      // return a 404 status
-      const error = new Error(`${req.path} not found`);
-      error.status = 404;
-      return next(error);
-    })
-    .catch(next);
-});
-
-// middleware to render server side HTML
 app.use(handleRender);
 
 const prettyError = new PrettyError();
