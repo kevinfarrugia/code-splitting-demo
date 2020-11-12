@@ -98,19 +98,19 @@ const Page2 = React.lazy(() => import("../page2"));
 ```
 
 ```
-    <Suspense fallback={null}>
-      <Switch>
-        <Route path="/1" exact>
-          <Page1 />
-        </Route>
-        <Route path="/2" exact>
-          <Page2 />
-        </Route>
-        <Route>
-          <Home />
-        </Route>
-      </Switch>
-    </Suspense>
+<Suspense fallback={null}>
+  <Switch>
+    <Route path="/1" exact>
+      <Page1 />
+    </Route>
+    <Route path="/2" exact>
+      <Page2 />
+    </Route>
+    <Route>
+      <Home />
+    </Route>
+  </Switch>
+</Suspense>
 ```
 
 ### Why did you disable SSR?
@@ -122,22 +122,22 @@ I disabled SSR to simplify the demo as ReactDOMServer does not yet support Suspe
 The current configuration inlines a single critical CSS file which includes all critical CSS defined across the project. This is done using the following code inside **scripts/webpack.config.js**:
 
 ```
-        criticalStyles: {
-          name: "critical",
-          test: /critical\.(sa|sc|c)ss$/,
-          chunks: "initial",
-          enforce: true,
-        }
+criticalStyles: {
+  name: "critical",
+  test: /critical\.(sa|sc|c)ss$/,
+  chunks: "initial",
+  enforce: true,
+}
 ```
 
 The output of this chunk is then inlined in **src/templates/index.hbs**:
 
 ```
-        <% if (/critical(\..*)?\.css$/.test(htmlWebpackPlugin.files.css[index])) { %>
-					<style>
-							<%= compilation.assets[htmlWebpackPlugin.files.css[index].substr(htmlWebpackPlugin.files.publicPath.length)].source() %>
-					</style>
-        <% } %>
+<% if (/critical(\..*)?\.css$/.test(htmlWebpackPlugin.files.css[index])) { %>
+  <style>
+    <%= compilation.assets[htmlWebpackPlugin.files.css[index].substr(htmlWebpackPlugin.files.publicPath.length)].source() %>
+  </style>
+<% } %>
 ```
 
 _This could be possibly be reconfigured to inline a separate CSS file for each route; however I have not tested this myself._
