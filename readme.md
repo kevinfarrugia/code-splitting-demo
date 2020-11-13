@@ -1,10 +1,40 @@
-# Code Splitting Demo
+# Code splitting is easy
 
-This demo aims to answer some frequently asked related to code-splitting & chunking. The demo is built on top of [Performance First React Template](https://github.com/kevinfarrugia/performance-first-react-template) using `React.lazy` and [route-based code-splitting](https://reactjs.org/docs/code-splitting.html#route-based-code-splitting) using [react-router-dom](https://reactrouter.com/web/guides/quick-start).
+This demo aims to answer some frequently asked questions related to code-splitting & chunking. The demo is built on top of [Performance First React Template](https://github.com/kevinfarrugia/performance-first-react-template), which uses Webpack and ReactJS. For the scope of this demo I will be using `React.lazy` [route-based code-splitting](https://reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [react-router-dom](https://reactrouter.com/web/guides/quick-start).
 
-The code-splitting configuration is found in `scripts/webpack.config.js` and the routing configuration is found in `src/js/components/router/index.jsx`.
+The code-splitting configuration is found in [**scripts/webpack.config.js**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/scripts/webpack.config.js) and the routing configuration is found in [**src/js/components/router/index.jsx**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/router/index.jsx).
 
-The **Page1** component has a dependency on `Glider` which is taken from the [react-glider](https://github.com/hipstersmoothie/react-glider). This file then has a dependency on [glider-js](https://github.com/NickPiscitelli/Glider.js) including its respective CSS file.
+_Note: In this demo project, most files are small and you probably wouldn't want to separate them into chunks in a production environment. It should only serve to test or illustrate the principle._
+
+## Output
+
+If you inspect the network traffic, you are able to see the following chunks (note that the chunk IDs may change on rebuild):
+
+| File                 | Description                                                                                                                                         | Lazy Loaded |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `runtime.[hash].js`  | The Webpack runtime chunk. Configured using [`runtimeChunk: "single"`](https://webpack.js.org/configuration/optimization/#optimizationruntimechunk) | No          |
+| `vendors.[hash].js`  | The main vendors chunk generated from imported third-parties.                                                                                       | No          |
+| `critical.[hash].js` | The CSS modules file containing the class names for the critical CSS.                                                                               | No          |
+| `client.[hash].js`   | The main JavaScript chunk.                                                                                                                          | No          |
+| `client.[hash].css`  | The main CSS chunk.                                                                                                                                 | No          |
+| `4.[hash].chunk.js`  | The JavaScript for **Page1** and its dependencies (includes third-party `glider-js`).                                                               | Yes         |
+| `4.[hash].chunk.css` | The CSS for **Page1** and its dependencies (includes third-party `glider-js/glider.min.css`).                                                       | Yes         |
+| `5.[hash].chunk.js`  | The JavaScript for **Page2**                                                                                                                        | Yes         |
+| `5.[hash].chunk.css` | The CSS for **Page2**                                                                                                                               | Yes         |
+
+---
+
+### Will stylesheets be bundled in separate chunks?
+
+If one or more stylesheets are imported in a single module or its dependencies, then a reference to the bundled stylesheet will only be included in that module's chunk. For clarity, a chunk may consist of more than one file (JS & CSS).
+
+In our example, [**Page1**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page1/index.jsx) imports a stylesheet:
+
+```
+import styles from "./style.scss";
+```
+
+As it is the only file which references this stylesheet, then it will be chunked. Additionally, **Page1** is the only module which imports the [**Glider**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider/index.jsx) component, which imports another two stylesheets and has a dependency on the third-party [glider-js](https://github.com/NickPiscitelli/Glider.js).
 
 **src/js/components/glider/index.jsx**
 
@@ -13,82 +43,42 @@ import "glider-js";
 import "glider-js/glider.min.css";
 ```
 
-_In this demo, most files are small (and might not require to be separated into separate chunks) and only used for demonstration purposes._
+All these will be included in a single chunk, together with the `style.scss` above. ✅
 
-## Output
+On the contrary, if a stylesheet is imported in more than one module, then the bundler will output a single stylsheet referenced by both modules. This results in downloading a single CSS file. ✅
 
-If you inspect the network traffic, you are able to see the following chunks:
-
-| File                 | Description                                                                                                                                         | Lazy Loaded |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `runtime.[hash].js`  | The Webpack runtime chunk. Configured using [`runtimeChunk: "single"`](https://webpack.js.org/configuration/optimization/#optimizationruntimechunk) | No          |
-| `vendors.[hash].js`  | The main vendors chunk generated from imported third-parties..                                                                                      | No          |
-| `critical.[hash].js` | The CSS modules file for critical CSS.                                                                                                              | No          |
-| `client.[hash].js`   | The main JavaScript chunk.                                                                                                                          | No          |
-| `client.[hash].css`  | The main CSS chunk.                                                                                                                                 | No          |
-| `4.[hash].chunk.js`  | The JavaScript for **Page1** and its dependencies (includes `glider-js`).                                                                           | No          |
-| `4.[hash].chunk.css` | The CSS for **Page1** and its dependencies (includes `glider-js/glider.min.css`).                                                                   | No          |
-| `5.[hash].chunk.js`  | The JavaScript for **Page2**                                                                                                                        | No          |
-| `5.[hash].chunk.css` | The CSS for **Page2** (excludes `/home/style.scss`)                                                                                                 | No          |
-
-_Please note that the chunk IDs may change on rebuild._
-
----
-
-### Will stylesheets be bundled in separate chunks?
-
-If one or more stylesheets are imported in a single module or its dependencies, then a reference to the bundled stylesheet will only be included in that module's chunk. For clarity, a chunk may consist of more than one file (JS & CSS).
-
-In our example, **Page1** imports a stylesheet:
-
-```
-import styles from "./style.scss";
-```
-
-As it is the only file which references this stylesheet, then it will be chunked. Additionally, **Page1** is the only module which imports the `Glider` component, which imports another two stylesheets. All these will be included in a single chunk, together with the `style.scss` above.
-
-On the contrary, if a stylesheet is imported in more than one module, then a single stylsheet is referenced by both modules, resulting in a single downloaded CSS file.
-
-In our example, **Page2** imports a shared stylesheet:
+In our example, [**Page2**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page2/index.jsx) imports a shared stylesheet:
 
 ```
 import sharedStyles from "../home/style.scss";
 ```
 
-This stylesheet is also imported in the `Home` module and therefore not included in the Page2 chunk.
+This stylesheet is also imported in the [**Home**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/home/index.jsx) module and therefore is not included in the output of the Page2 chunk. ✅
 
 ### What about images?
 
-Images are only downloaded when needed and referenced in the DOM. This means that images should have no impact on your bundle sizes.
+By design, images are only downloaded when needed and referenced in the DOM. This means that images should have no impact on your bundle sizes.
 
-If you are importing your images using file-loader's [`esModule`](https://webpack.js.org/loaders/file-loader/#esmodule) then you will benefit from module concatenation and tree-shaking on used images.
+If you are importing your images using file-loader's [`esModule`](https://webpack.js.org/loaders/file-loader/#esmodule) then you will also benefit from module concatenation and tree-shaking on used images, but this is not code-splitting. ✅
 
-If you are using [url-loader](https://webpack.js.org/loaders/url-loader/) and your images are being encoded into Base64 or SVG strings, then they will be encoded into each chunk resulting in duplicate code.
+However, if you are using [url-loader](https://webpack.js.org/loaders/url-loader/) and your images are being encoded into Base64 or SVG strings, then they will be encoded into each chunk resulting in duplicate code. ❌
 
 ### May I use CommonJS imports?
 
-Yes, CommonJS & ES6 module imports work equally well.
+Yes, CommonJS & ES6 module imports work equally well. ✅
 
-In our example, in **Page2** the below two lines result in equivalent chunks:
+In our example, in **Page2** the below two lines would result in equivalent chunks:
 
 ```
 const styles = require("./style.scss");
 // import styles from "./style.scss");
 ```
 
-### Does code-splitting work with named exports?
-
-`React.lazy` requires you to have a default export, however you may use a combination of named and default exports if you wish.
-
-### Will `export * from "./my-module"` be tree-shaken?
-
-No, using `export * from "./my-module"` means that any named export in `./my-module` will be included in the chunk and is strongly discouraged. If you use default exports (my personal preference) then this syntax isn't even permitted.
-
-The example code includes a component **Page3** which uses named exports and exports an unused component **../glider-named-export**. The resultant chunk includes the contents of both **../glider-named-export** and **../glider** even if only one of the components is referenced. There are no linting errors apart from `import/prefer-default-export`, making this difficult to debug & identify.
-
 ### When using route-based code-splitting, is it possible to have some routes lazy-loaded while others loaded regularly?
 
-Yes, definitely. In this example, the Home module is loaded regularly while the other pages are loaded lazily.
+Yes, definitely. ✅
+
+In this example, the **Home** module is loaded regularly while the other pages are loaded lazily.
 
 ```
 import Home from "../home";
@@ -113,13 +103,21 @@ const Page2 = React.lazy(() => import("../page2"));
 </Suspense>
 ```
 
-### Why did you disable SSR?
+### Does code-splitting work with named exports?
 
-I disabled SSR to simplify the demo as ReactDOMServer does not yet support Suspense. This could be mitigated using dynamic imports or [Loadable Components](https://github.com/gregberge/loadable-components).
+`React.lazy` requires you to have a default export, however you may still use named exports for other components, even for those which are being referenced by the lazily loaded component. ✅
+
+### Will `export * from "./my-module"` be tree-shaken?
+
+No, using `export * from "./my-module"` means that any named export in `./my-module` will be included in the chunk and is strongly discouraged. If you use default exports and have your linters setup correctly, then this syntax isn't even permitted. ❌
+
+The example code includes a component [**Page3**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page3/index.jsx) which uses named exports and also exports an unused component [**../glider-named-export**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider-named-export/index.jsx). The resultant chunk includes the contents of both **../glider-named-export** and **../glider**, even if only one of the components is actually being used. There are no linting errors apart from `import/prefer-default-export`, making this issue with tree-shaking difficult to debug & identify.
 
 ### Does this work with critical (inlined) CSS?
 
-The current configuration inlines a single critical CSS file which includes all critical CSS defined across the project. This is done using the following code inside **scripts/webpack.config.js**:
+Of course it does. ✅
+
+The configuration used in this demo inlines a single critical CSS file which includes all critical CSS defined across the project. This is done using the following code inside **scripts/webpack.config.js**:
 
 ```
 criticalStyles: {
@@ -141,6 +139,10 @@ The output of this chunk is then inlined in **src/templates/index.hbs**:
 ```
 
 _This could be possibly be reconfigured to inline a separate CSS file for each route; however I have not tested this myself._
+
+### Why did you disable SSR?
+
+I disabled SSR to simplify the demo as ReactDOMServer does not yet support Suspense. This could be mitigated using dynamic imports or [Loadable Components](https://github.com/gregberge/loadable-components).
 
 ## Contributing
 
