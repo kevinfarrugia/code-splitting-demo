@@ -34,7 +34,7 @@ In our example, [**Page1**](https://github.com/kevinfarrugia/code-splitting-demo
 import styles from "./style.scss";
 ```
 
-As it is the only file which references this stylesheet, then it will be chunked. Additionally, **Page1** is the only module which imports the [**Glider**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider/index.jsx) component, which imports another two stylesheets and has a dependency on the third-party [glider-js](https://github.com/NickPiscitelli/Glider.js).
+As it is the only file which references this stylesheet, then it will be chunked. Additionally, **Page1** is the only module which imports the [**Glider**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider/index.jsx) component; which in turn imports another two stylesheets and also has a dependency on the third-party [glider-js](https://github.com/NickPiscitelli/Glider.js).
 
 **src/js/components/glider/index.jsx**
 
@@ -45,7 +45,7 @@ import "glider-js/glider.min.css";
 
 ✅ All these will be included in a single chunk, together with the `style.scss` above.
 
-✅ On the contrary, if a stylesheet is imported in more than one module, then the bundler will output a single stylsheet referenced by both modules. This results in downloading a single CSS file.
+✅ On the contrary, if a stylesheet is imported in more than one module, then the bundler will output a single stylsheet referenced by both modules.
 
 In our example, [**Page2**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page2/index.jsx) imports a shared stylesheet:
 
@@ -53,11 +53,11 @@ In our example, [**Page2**](https://github.com/kevinfarrugia/code-splitting-demo
 import sharedStyles from "../home/style.scss";
 ```
 
-✅ This stylesheet is also imported in the [**Home**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/home/index.jsx) module and therefore is not included in the output of the Page2 chunk.
+✅ This stylesheet is also imported in the [**Home**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/home/index.jsx) module and therefore is not included in the **Page2** chunk.
 
 ### What about images?
 
-By design, images are only downloaded when needed and referenced in the DOM. This means that images should have no impact on your bundle sizes.
+By design, images are only downloaded when needed and present in the DOM. This means that images should have no impact on your bundle sizes.
 
 ✅ If you are importing your images using file-loader's [`esModule`](https://webpack.js.org/loaders/file-loader/#esmodule) then you will also benefit from module concatenation and tree-shaking on used images, but this is not code-splitting.
 
@@ -109,13 +109,13 @@ const Page2 = React.lazy(() => import("../page2"));
 
 ### Will `export * from "./my-module"` be tree-shaken?
 
-❌ No, using `export * from "./my-module"` means that any named export in `./my-module` will be included in the chunk and is strongly discouraged. If you use default exports and have your linters setup correctly, then this syntax isn't even permitted.
+❌ No, using `export * from "./my-module"` means that any named export in `./my-module` will be included in the chunk and is strongly discouraged. If you use default exports and have your linter setup correctly, then this syntax isn't even permitted.
 
 The example code includes a component [**Page3**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page3/index.jsx) which uses named exports and also exports an unused component [**../glider-named-export**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider-named-export/index.jsx). The resultant chunk includes the contents of both **../glider-named-export** and **../glider**, even if only one of the components is actually being used. There are no linting errors apart from `import/prefer-default-export`, making this issue with tree-shaking difficult to debug & identify.
 
 ### Does this work with critical (inlined) CSS?
 
-✅ Of course it does.
+✅ Yes it does.
 
 The configuration used in this demo inlines a single critical CSS file which includes all critical CSS defined across the project. This is done using the following code inside **scripts/webpack.config.js**:
 
@@ -138,7 +138,7 @@ The output of this chunk is then inlined in **src/templates/index.hbs**:
 <% } %>
 ```
 
-_This could be possibly be reconfigured to inline a separate CSS file for each route; however I have not tested this myself._
+_This could possibly be reconfigured to inline a separate CSS file for each route; however I have not experimented with this myself._
 
 ### Why did you disable SSR?
 
