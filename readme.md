@@ -17,10 +17,13 @@ If you inspect the network traffic, you are able to see the following chunks (no
 | `critical.[hash].js` | The CSS modules file containing the class names for the critical CSS.                                                                               | No          |
 | `client.[hash].js`   | The main JavaScript chunk.                                                                                                                          | No          |
 | `client.[hash].css`  | The main CSS chunk.                                                                                                                                 | No          |
-| `4.[hash].chunk.js`  | The JavaScript for **Page1** and its dependencies (includes third-party `glider-js`).                                                               | Yes         |
-| `4.[hash].chunk.css` | The CSS for **Page1** and its dependencies (includes third-party `glider-js/glider.min.css`).                                                       | Yes         |
-| `5.[hash].chunk.js`  | The JavaScript for **Page2**                                                                                                                        | Yes         |
-| `5.[hash].chunk.css` | The CSS for **Page2**                                                                                                                               | Yes         |
+| `0.[hash].chunk.js`  | The JavaScript for **Glider** and its dependencies (includes third-party `glider-js`).                                                              | Yes         |
+| `5.[hash].chunk.js`  | The JavaScript for **Page1** and its dependencies (includes third-party `glider-js`).                                                               | Yes         |
+| `5.[hash].chunk.css` | The CSS for **Page1** and its dependencies (includes third-party `glider-js/glider.min.css`).                                                       | Yes         |
+| `6.[hash].chunk.js`  | The JavaScript for **Page2**                                                                                                                        | Yes         |
+| `6.[hash].chunk.css` | The CSS for **Page2**                                                                                                                               | Yes         |
+| `7.[hash].chunk.js`  | The JavaScript for **Page3** including the unused named export from `../glider-named-export`.                                                       | Yes         |
+| `7.[hash].chunk.css` | The CSS for **Page3**                                                                                                                               | Yes         |
 
 ---
 
@@ -107,7 +110,9 @@ const Page2 = React.lazy(() => import("../page2"));
 
 ✅ `React.lazy` requires you to have a default export, however you may still use named exports for other components, even for those which are being referenced by the lazily loaded component.
 
-### Will `export * from "./my-module"` be tree-shaken?
+### What about re-exporting? Will `export * from "./my-module"` be tree-shaken?
+
+** Edit (2020-11-16): Will need to confirm if this persists in Webpack v5. **
 
 ❌ No, using `export * from "./my-module"` means that any named export in `./my-module` will be included in the chunk and is strongly discouraged. If you use default exports and have your linter setup correctly, then this syntax isn't even permitted.
 

@@ -325,10 +325,12 @@ const clientConfig = {
   optimization: {
     runtimeChunk: "single",
     splitChunks: {
-      chunks: "initial",
-      minSize: 0,
-      maxInitialRequests: Infinity,
+      chunks: "all",
+      maxInitialRequests: 25,
+      minSize: 20000,
       cacheGroups: {
+        default: false,
+        vendors: false,
         criticalStyles: {
           name: "critical",
           test: /critical\.(sa|sc|c)ss$/,
@@ -339,10 +341,11 @@ const clientConfig = {
           name: "vendors",
           test: /[\\/]node_modules[\\/]/,
           chunks: "initial",
+          priority: 20,
         },
-        default: {
+        shared: {
+          priority: 10,
           minChunks: 2,
-          priority: -20,
           reuseExistingChunk: true,
         },
       },
