@@ -1,4 +1,4 @@
-# Code splitting is easy
+# Code splitting is hard
 
 This demo aims to answer some frequently asked questions related to code-splitting & chunking. The demo is built on top of [Performance First React Template](https://github.com/kevinfarrugia/performance-first-react-template), which uses Webpack and ReactJS. For the scope of this demo I will be using `React.lazy` [route-based code-splitting](https://reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [react-router-dom](https://reactrouter.com/web/guides/quick-start).
 
