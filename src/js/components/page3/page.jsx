@@ -6,6 +6,8 @@ import image2 from "../../../img/photo-1604276919965-7ba5dab422f4.jpeg";
 import Glider from "../glider";
 import styles from "./style.scss";
 
+export * from "../glider-named-export";
+
 export const Page3 = () => (
   <div className={styles.container}>
     <h1 className={styles.title}>Page 1</h1>

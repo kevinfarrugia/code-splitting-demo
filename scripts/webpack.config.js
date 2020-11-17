@@ -34,7 +34,7 @@ const staticAssetName = isDevelopment
 
 const config = {
   context: ROOT_DIR,
-  mode: isDevelopment ? "development" : "production",
+  mode: "production",
   output: {
     path: path.resolve(ROOT_DIR, OUTPUT_DIR, "public"),
     publicPath: "/",
