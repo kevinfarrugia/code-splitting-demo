@@ -112,13 +112,13 @@ const Page2 = React.lazy(() => import("../page2"));
 
 ### What about re-exporting? Will `export * from "./my-module"` be tree-shaken?
 
-** Edit (2020-11-16): Will need to confirm if this persists in Webpack v5. **
-
 ⚠ Using `export * from "./my-module"` means that any export in `./my-module`, regardless of whether it is used or unused, would need to be evaluated and executed in case one of those exports has side-effects. As a result, you need to explicitly inform Webpack that the file has no side-effects using the `sideEffects` **package.json** property. Sean Larkin has an excellent explanation on [Stack Overflow](https://stackoverflow.com/a/49203452/2315681).
 
 The example code includes a component [**Page3**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/page3/page3.jsx) which exports an unused component [**../glider-named-export**](https://github.com/kevinfarrugia/code-splitting-demo/blob/master/src/js/components/glider-named-export/index.jsx). Without `sideEffects: false`, the resultant chunk includes the contents of **../glider-named-export**, even if it is never actually being used.
 
 _Note that the package.json for this demo project has `sideEffects: false` by default, but in a new project it needs to be set explicitly._
+
+*Edit (2020-11-16): Will need to confirm if this still behaves the same in Webpack v5.*
 
 ### Does this work with critical (inlined) CSS?
 
